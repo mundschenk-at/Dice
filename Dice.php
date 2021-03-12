@@ -213,7 +213,13 @@ class Dice {
 		// Cache some information about the parameter in $paramInfo so (slow) reflection isn't needed every time
 		$paramInfo = [];
 		foreach ($method->getParameters() as $param) {
-			$class = $param->getClass() ? $param->getClass()->name : null;
+			if (PHP_VERSION_ID < 70100) {
+				// getClass is deprecated in PHP 8.0 but getType() does not support getName() before 7.1.
+				// See https://github.com/Level-2/Dice/issues/192 for details.
+				$class = $param->getClass() ? $param->getClass()->name : null;
+			} else {
+				$class = $param->getType() && !$param->getType()->isBuiltin() && $param->getType() instanceof \ReflectionNamedType ? $param->getType()->getName() : null;
+			}
 			$paramInfo[] = [$class, $param, isset($rule['substitutions']) && array_key_exists($class, $rule['substitutions'])];
 		}
 
