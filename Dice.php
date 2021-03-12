@@ -254,6 +254,7 @@ class Dice {
 					for ($i = 0; $i < count($args); $i++) {
 						if (call_user_func('is_' . $param->getType()->getName(), $args[$i])) {
 							$parameters[] = array_splice($args, $i, 1)[0];
+							break; // Fixes incorrect parameter order introduced in 4.0.2 - see https://github.com/Level-2/Dice/issues/181
 						}
 					}
 				}
